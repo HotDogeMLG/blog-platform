@@ -1,0 +1,116 @@
+.signup {
+  margin: 60px auto 30px auto;
+  padding: 48px 32px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0px 0.609px 2.933px 0px rgba(0, 0, 0, 0.02),
+    0px 1.463px 7.049px 0px rgba(0, 0, 0, 0.03),
+    0px 2.755px 13.273px 0px rgba(0, 0, 0, 0.04),
+    0px 4.914px 23.676px 0px rgba(0, 0, 0, 0.04),
+    0px 9.191px 44.284px 0px rgba(0, 0, 0, 0.05),
+    0px 22px 106px 0px rgba(0, 0, 0, 0.07);
+}
+
+.heading {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 15px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.form label {
+  width: 100%;
+  font-weight: 500;
+}
+
+.formInput {
+  width: 95%;
+  height: 40px;
+  padding-inline: 12px;
+  border-radius: 4px;
+  border: 1px solid hsla(0, 0%, 85%, 1);
+  margin-top: 5px;
+}
+
+.formInput::placeholder {
+  font-weight: 400;
+}
+
+.personalInfo {
+  color: hsla(0, 0%, 35%, 1);
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkboxInput {
+  appearance: none;
+  display: inline;
+}
+
+.checkbox {
+  display: inline-block;
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid hsla(209, 100%, 55%, 1);
+  border-radius: 3px;
+}
+
+.checkbox svg {
+  width: 16px;
+  height: 16px;
+}
+
+.checkboxInput:checked + .checkbox {
+  background-color: hsla(209, 100%, 55%, 1);
+}
+
+.submit {
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  background: hsla(209, 100%, 55%, 1);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+}
+
+.submit:hover {
+  filter: brightness(0.9);
+}
+
+.submit:active {
+  transform: scale(0.98);
+}
+
+.aboutAcc {
+  margin-top: 13px;
+  text-decoration: none;
+  color: hsla(0, 0%, 55%, 1);
+}
+
+.btn {
+  text-decoration: none;
+  color: hsla(209, 100%, 55%, 1);
+}
+
+.btn:hover {
+  filter: brightness(0.75);
+}

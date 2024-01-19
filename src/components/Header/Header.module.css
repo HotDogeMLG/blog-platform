@@ -1,0 +1,48 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  padding-inline: 20px;
+  background-color: white;
+  font-size: 18px;
+  line-height: 28px;
+  box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn {
+  border: none;
+  outline: none;
+  background-color: inherit;
+  color: black;
+  font-size: inherit;
+  line-height: inherit;
+  text-decoration: none;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: scale(1.03);
+}
+
+.signup {
+  padding: 6px 18px 8px 18px;
+  color: hsla(100, 77%, 44%, 1);
+  border: 1px solid hsla(100, 77%, 44%, 1);
+  border-radius: 5px;
+}
+
+.green:hover {
+  background-color: hsla(100, 77%, 44%, 0.15);
+}
