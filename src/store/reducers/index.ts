@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
-import { pageReducer } from './pageReducer';
 import { configureStore } from '@reduxjs/toolkit';
+import { pageReducer } from './pageReducer';
+import { articleReducer } from './articleReducer';
 
 const rootReducer = combineReducers({
   page: pageReducer,
+  articles: articleReducer,
 });
 
 export const store = configureStore({

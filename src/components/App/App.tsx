@@ -11,8 +11,12 @@ import MyPagination from '../MyPagination/MyPagination';
 import './App.scss';
 import Signup from '../Sign/Signup';
 import Signin from '../Sign/Signin';
+import FullArticle from '../Article/FullArticle';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import Error from '../Error/Error';
 
 const App: FC = () => {
+  const error = useTypedSelector((state) => state.articles.error);
   return (
     <Router>
       <div className='App'>
@@ -22,13 +26,21 @@ const App: FC = () => {
           <Route
             path='/articles'
             element={
-              <div>
-                <ArticleList />
-                <div className='App__pagination'>
-                  <MyPagination />
+              error ? (
+                <Error />
+              ) : (
+                <div>
+                  <ArticleList />
+                  <div className='App__pagination'>
+                    <MyPagination />
+                  </div>
                 </div>
-              </div>
+              )
             }
+          />
+          <Route
+            path='/articles/:slug'
+            element={error ? <Error /> : <FullArticle />}
           />
           <Route path='/signup' Component={Signup} />
           <Route path='/signin' Component={Signin} />

@@ -1,56 +1,21 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import Markdown from 'react-markdown';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { useActions } from '../../hooks/useActions';
 import styles from './Article.module.css';
-import { Link } from 'react-router-dom';
+import Loader from '../Loader/Loader';
 
-interface ArticleProps {
-  slug: string;
-  title: string;
-  description: string;
-  tags: string[];
-  favorites: number;
-  created: string;
-  author: {
-    username: string;
-    image: string;
-  };
-}
+const Article: FC = () => {
+  const slug = useParams().slug;
 
-const Article: FC<ArticleProps> = ({
-  slug,
-  title,
-  favorites,
-  tags,
-  description,
-  author,
-  created,
-}) => {
-  const formatTitle = (title: string) => {
-    const newTitle = title.substring(0, 150);
-    if (newTitle.length === title.length) return title;
+  const { getFullArticle } = useActions();
 
-    const titleArr = newTitle.split(' ');
-    if (titleArr.length <= 1) return newTitle + '...';
-    else return titleArr.slice(0, titleArr.length - 1).join(' ') + '...';
-  };
+  useEffect(() => {
+    if (slug !== undefined) getFullArticle(slug);
+  }, []);
 
-  const formatTag = (tag: string | null) => {
-    if (tag === null) return 'No tags';
-    const newTag = tag.substring(0, 20);
-    if (newTag.length === tag.length) return tag;
-
-    const tagArr = newTag.split(' ');
-    if (tagArr.length <= 1) return newTag + '...';
-    else return tagArr.slice(0, tagArr.length - 1).join(' ') + '...';
-  };
-
-  const formatDescription = (desc: string) => {
-    const newDesc = desc.substring(0, 700);
-    if (newDesc.length === desc.length) return desc;
-
-    const descArr = newDesc.split(' ');
-    if (descArr.length <= 1) return newDesc + '...';
-    else return descArr.slice(0, descArr.length - 1).join(' ') + '...';
-  };
+  const article = useTypedSelector((state) => state.articles.articles)[0];
 
   const formatDate = (created: string) => {
     const date = new Date(created);
@@ -60,17 +25,19 @@ const Article: FC<ArticleProps> = ({
     return `${month} ${day}, ${year}`;
   };
 
-  const tagList = tags.map((tag) => {
-    return <span key={tag}>{formatTag(tag)}</span>;
-  });
+  let tags: JSX.Element[] = [];
+  if (article)
+    tags = article.tagList.map((tag) => (
+      <span key={tag}>{article.tagList}</span>
+    ));
 
-  return (
+  const loading = useTypedSelector((state) => state.articles.loading);
+
+  return !loading ? (
     <div className={styles.article}>
       <div className={styles.info}>
         <div className={styles.heading}>
-          <Link to={`/articles/${slug}`} className={styles.title}>
-            {formatTitle(title)}
-          </Link>
+          <h5 className={styles.title}>{article.title}</h5>
           <span className={styles.likes}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -92,21 +59,26 @@ const Article: FC<ArticleProps> = ({
                 </clipPath>
               </defs>
             </svg>
-            {favorites}
+            {article.favoritesCount}
           </span>
         </div>
-        <div className={styles.tags}>{tagList}</div>
-        <p className={styles.text}>{formatDescription(description)}</p>
+        <div className={styles.tags}>{tags}</div>
+        <p className={`${styles.text} ${styles.description}`}>
+          {article.description}
+        </p>
+        <Markdown>{article.body}</Markdown>
       </div>
 
       <div className={styles.creator}>
         <div>
-          <div className={styles.name}>{author.username}</div>
-          <div className={styles.date}>{formatDate(created)}</div>
+          <div className={styles.name}>{article.author.username}</div>
+          <div className={styles.date}>{formatDate(article.createdAt)}</div>
         </div>
-        <img src={author.image} className={styles.image}></img>
+        <img src={article.author.image} className={styles.image}></img>
       </div>
     </div>
+  ) : (
+    <Loader />
   );
 };
 

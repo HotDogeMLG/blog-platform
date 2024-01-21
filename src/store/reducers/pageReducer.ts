@@ -7,7 +7,7 @@ const pageDefaultState: PageState = {
 export const pageReducer = (
   state: PageState = pageDefaultState,
   action: PageAction
-) => {
+): PageState => {
   switch (action.type) {
     case PageActionTypes.CHANGE_PAGE:
       return { ...state, page: action.payload };

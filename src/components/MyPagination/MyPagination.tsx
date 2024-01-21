@@ -9,12 +9,18 @@ const MyPagination: React.FC = () => {
   const changePageFn = (page: number) => {
     changePage(page);
   };
+
+  const totalItems = useTypedSelector((state) => state.articles.total);
+
   return (
     <Pagination
       current={page}
       onChange={changePageFn}
       defaultCurrent={1}
-      total={50}
+      total={totalItems}
+      pageSize={5}
+      showSizeChanger={false}
+      showQuickJumper
     />
   );
 };
