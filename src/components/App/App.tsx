@@ -9,11 +9,12 @@ import Header from '../Header/Header';
 import ArticleList from '../ArticleList/ArticleList';
 import MyPagination from '../MyPagination/MyPagination';
 import './App.scss';
-import Signup from '../Sign/Signup';
-import Signin from '../Sign/Signin';
+import Signup from '../Account/Signup';
+import Signin from '../Account/Signin';
 import FullArticle from '../Article/FullArticle';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Error from '../Error/Error';
+import Edit from '../Account/Edit';
 
 const App: FC = () => {
   const error = useTypedSelector((state) => state.articles.error);
@@ -42,8 +43,9 @@ const App: FC = () => {
             path='/articles/:slug'
             element={error ? <Error /> : <FullArticle />}
           />
-          <Route path='/signup' Component={Signup} />
-          <Route path='/signin' Component={Signin} />
+          <Route path='/sign-up' Component={Signup} />
+          <Route path='/sign-in' Component={Signin} />
+          <Route path='/profile' Component={Edit} />
           <Route path='*' element={<Navigate to='/articles' replace />} />
         </Routes>
       </div>

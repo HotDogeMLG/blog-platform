@@ -60,8 +60,8 @@ const Article: FC<ArticleProps> = ({
     return `${month} ${day}, ${year}`;
   };
 
-  const tagList = tags.map((tag) => {
-    return <span key={tag}>{formatTag(tag)}</span>;
+  const tagList = tags.map((tag, ind) => {
+    return <span key={ind}>{formatTag(tag)}</span>;
   });
 
   return (
