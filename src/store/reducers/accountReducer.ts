@@ -6,6 +6,13 @@ import {
 
 const accountDefaultState: AccountState = {
   loggedIn: false,
+  loading: false,
+  error: null,
+  username: '',
+  email: '',
+  token: '',
+  bio: '',
+  image: null,
 };
 
 export const accountReducer = (
@@ -13,10 +20,19 @@ export const accountReducer = (
   action: AccountAction
 ): AccountState => {
   switch (action.type) {
+    case AccountActionTypes.LOAD_ACCOUNT:
+      return { ...state, loading: true, error: null };
     case AccountActionTypes.LOG_IN:
-      return { ...state, loggedIn: true };
+      return {
+        loggedIn: true,
+        loading: false,
+        error: null,
+        ...action.payload,
+      };
     case AccountActionTypes.LOG_OUT:
-      return { ...state, loggedIn: false };
+      return { ...accountDefaultState };
+    case AccountActionTypes.ACCOUNT_ERROR:
+      return { ...state, error: action.payload };
     default:
       return state;
   }

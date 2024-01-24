@@ -13,3 +13,12 @@ export const validateUsername = (username: string) => {
   if (username.length >= 3 && username.length <= 20) return true;
   return false;
 };
+
+export const showUsernameError = (username: string, usernameErrors: string) => {
+  if (usernameErrors) return 'Username ' + usernameErrors;
+  else if (username.length < 3)
+    return 'Username should be at least 3 characters';
+  else if (username.length > 20)
+    return 'Username should be at most 20 characters';
+  return '';
+};

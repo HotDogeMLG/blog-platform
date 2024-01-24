@@ -25,6 +25,7 @@ const Article: FC<ArticleProps> = ({
   created,
 }) => {
   const formatTitle = (title: string) => {
+    if (title === undefined) return '';
     const newTitle = title.substring(0, 150);
     if (newTitle.length === title.length) return title;
 
@@ -44,6 +45,7 @@ const Article: FC<ArticleProps> = ({
   };
 
   const formatDescription = (desc: string) => {
+    if (desc === undefined) return '';
     const newDesc = desc.substring(0, 700);
     if (newDesc.length === desc.length) return desc;
 

@@ -1,8 +1,10 @@
 import { FC } from 'react';
 import styles from './account.module.css';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { validateEmail, validatePassword } from './validate';
+import { useActions } from '../../hooks/useActions';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 interface SigninForm {
   email: string;
@@ -22,12 +24,27 @@ const Signin: FC = () => {
     },
   });
 
-  const submit: SubmitHandler<SigninForm> = () => {
-    console.log('OK');
+  const { signIn } = useActions();
+
+  const submit: SubmitHandler<SigninForm> = (data) => {
+    signIn(data);
   };
   const errorHandler: SubmitErrorHandler<SigninForm> = (data) => {
     console.log(data);
   };
+
+  const accErrors = useTypedSelector((state) => state.account.error);
+  let signInError: string = '';
+  if (typeof accErrors === 'object' && accErrors) {
+    if (
+      'email or password' in accErrors &&
+      typeof accErrors['email or password'] === 'string'
+    )
+      signInError = accErrors['email or password'];
+  }
+
+  const loggedIn = useTypedSelector((state) => state.account.loggedIn);
+  if (loggedIn) return <Navigate to='/articles' />;
 
   return (
     <div className={styles.signup}>
@@ -74,6 +91,9 @@ const Signin: FC = () => {
             </div>
           )}
         </label>
+        {signInError && (
+          <div className={styles.error}>Password or email is invalid</div>
+        )}
         <input className={styles.submit} type='submit' value='Login'></input>
       </form>
       <div className={styles.aboutAcc}>

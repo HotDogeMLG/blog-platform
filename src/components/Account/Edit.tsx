@@ -1,16 +1,29 @@
 import React, { FC } from 'react';
 import styles from './account.module.css';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { validateEmail, validatePassword, validateUsername } from './validate';
+import {
+  showUsernameError,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from './validate';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { Navigate } from 'react-router-dom';
+import { useActions } from '../../hooks/useActions';
 
 interface EditForm {
   username: string;
   email: string;
   password: string;
-  avatar: string;
+  bio: string;
+  image: string;
 }
 
 const Edit: FC = () => {
+  const { username, email, bio, image } = useTypedSelector(
+    (state) => state.account
+  );
+
   const {
     register,
     handleSubmit,
@@ -18,19 +31,63 @@ const Edit: FC = () => {
     formState: { errors },
   } = useForm<EditForm>({
     defaultValues: {
-      username: '',
-      email: '',
+      username: username,
+      email: email,
       password: '',
-      avatar: '',
+      bio: bio,
+      image: image || '',
     },
   });
 
-  const submit: SubmitHandler<EditForm> = () => {
-    console.log('OK');
+  const { editProfile } = useActions();
+  const token = useTypedSelector((state) => state.account.token);
+
+  const submit: SubmitHandler<EditForm> = (data) => {
+    let validated: boolean = false;
+    const editData: { [key: string]: string } = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== '') {
+        editData[key] = value;
+        validated = true;
+      }
+    }
+    if (validated) editProfile(editData, token);
   };
   const errorHandler: SubmitErrorHandler<EditForm> = (data) => {
-    console.log(data);
+    console.log('NOT OK', data);
   };
+
+  const validateEditUsername = (username: string) => {
+    if (username === '') return true;
+    return validateUsername(username);
+  };
+  const validateEditEmail = (email: string) => {
+    if (email === '') return true;
+    return validateEmail(email);
+  };
+  const validateEditPassword = (password: string) => {
+    if (password === '') return true;
+    return validatePassword(password);
+  };
+  function validateUrl(value: string) {
+    if (value === '') return true;
+    return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
+      value
+    );
+  }
+
+  const accErrors = useTypedSelector((state) => state.account.error);
+  let usernameErrors: string = '';
+  let emailErrors: string = '';
+  if (typeof accErrors === 'object' && accErrors) {
+    if ('username' in accErrors && typeof accErrors.username === 'string')
+      usernameErrors = accErrors.username;
+    if ('email' in accErrors && typeof accErrors.email === 'string')
+      emailErrors = accErrors.email;
+  }
+
+  const loggedIn = useTypedSelector((state) => state.account.loggedIn);
+  if (!loggedIn) return <Navigate to='/sign-in' />;
 
   return (
     <div className={styles.signup}>
@@ -43,21 +100,18 @@ const Edit: FC = () => {
         <label>
           <div>Username</div>
           <input
-            className={`${styles.formInput} ${errors.username &&
+            className={`${styles.formInput} ${(errors.username ||
+              usernameErrors) &&
               styles.invalid}`}
             type='text'
             placeholder='Username'
             {...register('username', {
-              required: true,
-              validate: validateUsername,
+              validate: validateEditUsername,
             })}
           ></input>
-          {errors.username && (
+          {(errors.username || usernameErrors) && (
             <div className={styles.error}>
-              {watch('username').length < 3
-                ? 'Username should be at least 3 characters'
-                : watch('username').length > 20 &&
-                  'Username should be at most 20 characters'}
+              {showUsernameError(watch('username'), usernameErrors)}
             </div>
           )}
         </label>
@@ -65,14 +119,21 @@ const Edit: FC = () => {
         <label>
           <div>Email address</div>
           <input
-            className={`${styles.formInput} ${errors.email && styles.invalid}`}
+            className={`${styles.formInput} ${(errors.email || emailErrors) &&
+              styles.invalid}`}
             type='email'
             placeholder='Email address'
-            {...register('email', { required: true, validate: validateEmail })}
+            {...register('email', {
+              validate: validateEditEmail,
+            })}
           ></input>
-          <div className={styles.error}>
-            {errors.email && 'Please enter a correct email address'}
-          </div>
+          {(errors.email || emailErrors) && (
+            <div className={styles.error}>
+              {emailErrors
+                ? 'Email ' + emailErrors
+                : 'Please enter a correct email address'}
+            </div>
+          )}
         </label>
 
         <label>
@@ -83,8 +144,7 @@ const Edit: FC = () => {
             type='password'
             placeholder='New Password'
             {...register('password', {
-              required: true,
-              validate: validatePassword,
+              validate: validateEditPassword,
             })}
           ></input>
           {errors.password && (
@@ -93,6 +153,23 @@ const Edit: FC = () => {
                 ? 'Password should be at least 6 characters'
                 : watch('password').length > 40 &&
                   'Password should be at most 40 characters'}
+            </div>
+          )}
+        </label>
+
+        <label>
+          <div>Avatar Image (url)</div>
+          <input
+            className={`${styles.formInput} ${errors.image && styles.invalid}`}
+            type='url'
+            placeholder='Avatar image'
+            {...register('image', {
+              validate: validateUrl,
+            })}
+          ></input>
+          {errors.image && (
+            <div className={styles.error}>
+              {errors.image && 'Please enter a correct url'}
             </div>
           )}
         </label>

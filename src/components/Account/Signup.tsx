@@ -1,8 +1,15 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import styles from './account.module.css';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { validateEmail, validatePassword, validateUsername } from './validate';
+import {
+  showUsernameError,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from './validate';
+import { useActions } from '../../hooks/useActions';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 interface MyForm {
   username: string;
@@ -27,8 +34,15 @@ const Signup: FC = () => {
     },
   });
 
-  const submit: SubmitHandler<MyForm> = () => {
-    console.log('OK');
+  const { signUp } = useActions();
+
+  const submit: SubmitHandler<MyForm> = (data) => {
+    console.log('OK', data);
+    signUp({
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    });
   };
   const errorHandler: SubmitErrorHandler<MyForm> = (data) => {
     console.log(data);
@@ -44,6 +58,16 @@ const Signup: FC = () => {
     return false;
   };
 
+  const accErrors = useTypedSelector((state) => state.account.error);
+  let usernameErrors: string = '';
+  let emailErrors: string = '';
+  if (typeof accErrors === 'object' && accErrors) {
+    if ('username' in accErrors && typeof accErrors.username === 'string')
+      usernameErrors = accErrors.username;
+    if ('email' in accErrors && typeof accErrors.email === 'string')
+      emailErrors = accErrors.email;
+  }
+
   const showPasswordError = (repeatPswrd: string) => {
     if (repeatPswrd.length < 6)
       return 'Password should be at least 6 characters';
@@ -53,6 +77,9 @@ const Signup: FC = () => {
 
     return '';
   };
+
+  const loggedIn = useTypedSelector((state) => state.account.loggedIn);
+  if (loggedIn) return <Navigate to='/articles' />;
 
   return (
     <div className={styles.signup}>
@@ -65,7 +92,8 @@ const Signup: FC = () => {
         <label>
           <div>Username</div>
           <input
-            className={`${styles.formInput} ${errors.username &&
+            className={`${styles.formInput} ${(errors.username ||
+              usernameErrors) &&
               styles.invalid}`}
             type='text'
             placeholder='Username'
@@ -74,12 +102,9 @@ const Signup: FC = () => {
               validate: validateUsername,
             })}
           ></input>
-          {errors.username && (
+          {(errors.username || usernameErrors) && (
             <div className={styles.error}>
-              {watch('username').length < 3
-                ? 'Username should be at least 3 characters'
-                : watch('username').length > 20 &&
-                  'Username should be at most 20 characters'}
+              {showUsernameError(watch('username'), usernameErrors)}
             </div>
           )}
         </label>
@@ -87,14 +112,19 @@ const Signup: FC = () => {
         <label>
           <div>Email address</div>
           <input
-            className={`${styles.formInput} ${errors.email && styles.invalid}`}
+            className={`${styles.formInput} ${(errors.email || emailErrors) &&
+              styles.invalid}`}
             type='email'
             placeholder='Email address'
             {...register('email', { required: true, validate: validateEmail })}
           ></input>
-          <div className={styles.error}>
-            {errors.email && 'Please enter a correct email address'}
-          </div>
+          {(errors.email || emailErrors) && (
+            <div className={styles.error}>
+              {emailErrors
+                ? 'Email ' + emailErrors
+                : 'Please enter a correct email address'}
+            </div>
+          )}
         </label>
 
         <label>

@@ -15,9 +15,15 @@ import FullArticle from '../Article/FullArticle';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Error from '../Error/Error';
 import Edit from '../Account/Edit';
+import { useActions } from '../../hooks/useActions';
 
 const App: FC = () => {
   const error = useTypedSelector((state) => state.articles.error);
+
+  const { signIn } = useActions();
+  const loggedIn = useTypedSelector((state) => state.account.loggedIn);
+  if (!loggedIn && sessionStorage.getItem('user') !== null) signIn(null);
+
   return (
     <Router>
       <div className='App'>

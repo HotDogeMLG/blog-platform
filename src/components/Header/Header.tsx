@@ -6,7 +6,10 @@ import { useActions } from '../../hooks/useActions';
 
 const Header: FC = () => {
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
-  const { logIn, logOut } = useActions();
+  const { logOut } = useActions();
+
+  const username = useTypedSelector((state) => state.account.username);
+  const image = useTypedSelector((state) => state.account.image);
 
   return (
     <header className={styles.header}>
@@ -24,8 +27,11 @@ const Header: FC = () => {
 
         {loggedIn ? (
           <Link to='/profile' className={styles.user}>
-            <div className={styles.name}>John Doe</div>
-            <img className={styles.image}></img>
+            <div className={styles.name}>{username}</div>
+            <img
+              src={image !== null ? image : undefined}
+              className={styles.image}
+            ></img>
           </Link>
         ) : (
           <Link to='/sign-in' className={styles.btn}>
@@ -41,11 +47,7 @@ const Header: FC = () => {
             Log Out
           </button>
         ) : (
-          <Link
-            onClick={logIn}
-            to='/sign-up'
-            className={`${styles.btn} ${styles.green}`}
-          >
+          <Link to='/sign-up' className={`${styles.btn} ${styles.green}`}>
             Sign Up
           </Link>
         )}
