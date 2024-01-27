@@ -11,6 +11,8 @@ const Header: FC = () => {
   const username = useTypedSelector((state) => state.account.username);
   const image = useTypedSelector((state) => state.account.image);
 
+  const { setDefaultTags } = useActions();
+
   return (
     <header className={styles.header}>
       <Link to='/articles' className={styles.btn}>
@@ -18,11 +20,13 @@ const Header: FC = () => {
       </Link>
       <div className={styles.wrapper}>
         {loggedIn && (
-          <button
+          <Link
+            to='/new-article'
+            onClick={setDefaultTags}
             className={`${styles.btn} ${styles.green} ${styles.createArticle}`}
           >
             Create article
-          </button>
+          </Link>
         )}
 
         {loggedIn ? (

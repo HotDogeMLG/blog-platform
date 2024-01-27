@@ -16,6 +16,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Error from '../Error/Error';
 import Edit from '../Account/Edit';
 import { useActions } from '../../hooks/useActions';
+import NewArticle from '../NewArticle/NewArticle';
 
 const App: FC = () => {
   const error = useTypedSelector((state) => state.articles.error);
@@ -52,6 +53,7 @@ const App: FC = () => {
           <Route path='/sign-up' Component={Signup} />
           <Route path='/sign-in' Component={Signin} />
           <Route path='/profile' Component={Edit} />
+          <Route path='/new-article' Component={NewArticle} />
           <Route path='*' element={<Navigate to='/articles' replace />} />
         </Routes>
       </div>

@@ -27,9 +27,7 @@ const Article: FC = () => {
 
   let tags: JSX.Element[] = [];
   if (article)
-    tags = article.tagList.map((tag, i) => (
-      <span key={i}>{article.tagList}</span>
-    ));
+    tags = article.tagList.map((tag, i) => <span key={i}>{tag}</span>);
 
   const loading = useTypedSelector((state) => state.articles.loading);
 
