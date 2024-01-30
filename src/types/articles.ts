@@ -3,6 +3,7 @@ export enum ArticlesActionTypes {
   LOAD_ARTICLES = 'LOAD_ARTICLES',
   ARTICLE_ERROR = 'ARTICLE_ERROR',
   GET_FULL_ARTICLE = 'GET_FULL_ARTICLE',
+  UPDATE_ARTICLE = 'UPDATE_ARTICLE',
 }
 
 export interface article {
@@ -42,6 +43,11 @@ interface GetFullArticle {
   payload: article;
 }
 
+interface UpdateArticleAction {
+  type: ArticlesActionTypes.UPDATE_ARTICLE;
+  payload: { article: article; index: number };
+}
+
 interface ArticleErrorAction {
   type: ArticlesActionTypes.ARTICLE_ERROR;
   payload: string;
@@ -51,7 +57,8 @@ export type ArticleAction =
   | LoadArticlesAction
   | GetArticlesAction
   | ArticleErrorAction
-  | GetFullArticle;
+  | GetFullArticle
+  | UpdateArticleAction;
 
 export interface ArticleState {
   articles: article[];

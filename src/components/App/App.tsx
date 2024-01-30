@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -8,15 +8,15 @@ import {
 import Header from '../Header/Header';
 import ArticleList from '../ArticleList/ArticleList';
 import MyPagination from '../MyPagination/MyPagination';
-import './App.scss';
 import Signup from '../Account/Signup';
 import Signin from '../Account/Signin';
 import FullArticle from '../Article/FullArticle';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Error from '../Error/Error';
 import Edit from '../Account/Edit';
-import { useActions } from '../../hooks/useActions';
 import NewArticle from '../NewArticle/NewArticle';
+import { useActions } from '../../hooks/useActions';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import './App.scss';
 
 const App: FC = () => {
   const error = useTypedSelector((state) => state.articles.error);
@@ -54,6 +54,7 @@ const App: FC = () => {
           <Route path='/sign-in' Component={Signin} />
           <Route path='/profile' Component={Edit} />
           <Route path='/new-article' Component={NewArticle} />
+          <Route path='/:slug/edit' Component={NewArticle} />
           <Route path='*' element={<Navigate to='/articles' replace />} />
         </Routes>
       </div>

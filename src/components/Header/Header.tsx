@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import styles from './Header.module.css';
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
+import styles from './Header.module.css';
 
 const Header: FC = () => {
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);

@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import styles from './account.module.css';
 import { Link, Navigate } from 'react-router-dom';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { validateEmail, validatePassword } from './validate';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import styles from './account.module.css';
 
 interface SigninForm {
   email: string;

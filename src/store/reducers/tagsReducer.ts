@@ -1,14 +1,15 @@
 import { TagsAction, TagsActionTypes, TagsState } from '../../types/tags';
 
 const tagsDefaultState: TagsState = {
-  ids: [1],
-  currentId: 1,
+  ids: [0],
+  currentId: 0,
 };
 
 export const tagsReducer = (
   state: TagsState = tagsDefaultState,
   action: TagsAction
 ) => {
+  const newIds = [];
   switch (action.type) {
     case TagsActionTypes.ADD_TAG:
       return {
@@ -22,6 +23,11 @@ export const tagsReducer = (
       };
     case TagsActionTypes.SET_DEFAULT_TAGS:
       return tagsDefaultState;
+    case TagsActionTypes.SET_TAG_AMOUNT:
+      for (let i = 0; i < action.payload; i++) {
+        newIds.push(i);
+      }
+      return { currentId: action.payload, ids: newIds };
     default:
       return state;
   }

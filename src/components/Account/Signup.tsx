@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import styles from './account.module.css';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import {
   showUsernameError,
@@ -10,6 +9,7 @@ import {
 } from './validate';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import styles from './account.module.css';
 
 interface MyForm {
   username: string;

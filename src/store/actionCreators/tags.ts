@@ -11,3 +11,7 @@ export const deleteTag = (id: number) => {
 export const setDefaultTags = () => {
   return { type: TagsActionTypes.SET_DEFAULT_TAGS };
 };
+
+export const setTagAmount = (amount: number) => {
+  return { type: TagsActionTypes.SET_TAG_AMOUNT, payload: amount };
+};

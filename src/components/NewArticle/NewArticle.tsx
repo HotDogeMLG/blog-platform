@@ -1,12 +1,12 @@
-import { FC } from 'react';
-import styles from './NewArticle.module.css';
+import { FC, useEffect } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
+import axios from 'axios';
+import { Button, Flex } from 'antd';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import { Button, Flex } from 'antd';
-import { Navigate } from 'react-router-dom';
-import axios from 'axios';
 import { article } from '../../types/articles';
+import styles from './NewArticle.module.css';
 
 interface NewArticle {
   title: string;
@@ -16,39 +16,92 @@ interface NewArticle {
 }
 
 const NewArticle: FC = () => {
+  const navigate = useNavigate();
+
+  const slug = useParams().slug;
+  const editing = slug !== undefined ? true : false;
+
+  const {
+    getFullArticle,
+    setTagAmount,
+    deleteTag,
+    addTag,
+    setDefaultTags,
+  } = useActions();
+
+  useEffect(() => {
+    if (slug !== undefined) {
+      getFullArticle(slug);
+    }
+  }, []);
+
+  const article = useTypedSelector((state) => state.articles.articles[0]);
+
+  const defaultFormValues = {
+    title: '',
+    description: '',
+    body: '',
+    tagList: [''],
+  };
+
+  useEffect(() => {
+    if (!editing) reset(defaultFormValues);
+    else if (article)
+      reset({
+        title: article.title,
+        description: article.description,
+        body: article.body,
+        tagList: article.tagList,
+      });
+  }, [article, editing]);
+
+  useEffect(() => {
+    if (!editing) setDefaultTags();
+    else if (article) setTagAmount(article.tagList.length);
+  }, [article, editing]);
+
   const {
     register,
     handleSubmit,
     watch,
     resetField,
+    reset,
     formState: { errors },
   } = useForm<NewArticle>({
-    defaultValues: {
-      title: '',
-      description: '',
-      body: '',
-      tagList: [],
-    },
+    defaultValues: defaultFormValues,
   });
 
   const token = useTypedSelector((state) => state.account.token);
 
-  const submit: SubmitHandler<NewArticle> = (data) => {
+  const submit: SubmitHandler<NewArticle> = async (data) => {
     const tags = data.tagList.filter((tag) => tag !== '' && tag !== undefined);
     const uniqueTags: string[] = [];
     for (const tag of tags) {
       if (!uniqueTags.includes(tag)) uniqueTags.push(tag);
     }
     try {
-      axios.post<{ article: article }>(
-        'https://blog.kata.academy/api/articles',
-        { article: { ...data, tagList: uniqueTags } },
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      );
+      if (editing) {
+        await axios.put<{ article: article }>(
+          `https://blog.kata.academy/api/articles/${slug}`,
+          { article: { ...data, tagList: uniqueTags } },
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+      } else {
+        await axios.post<{ article: article }>(
+          'https://blog.kata.academy/api/articles',
+          { article: { ...data, tagList: uniqueTags } },
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+      }
+      return navigate('/articles');
     } catch (e) {
       console.log('Article post error: ', e);
     }
@@ -68,8 +121,6 @@ const NewArticle: FC = () => {
     return false;
   };
 
-  const { deleteTag } = useActions();
-  const { addTag } = useActions();
   const ids = useTypedSelector((state) => state.tags.ids);
   const tagList = ids.map((id, index, arr) => (
     <Flex gap='small' align='center' key={id}>
@@ -81,7 +132,7 @@ const NewArticle: FC = () => {
           styles.invalid}`}
         {...register(`tagList.${id}`, { required: true })}
       ></input>
-      {arr.length !== 1 && (
+      {arr.length !== 1 && !editing && (
         <Button
           danger
           onClick={() => {
@@ -100,12 +151,17 @@ const NewArticle: FC = () => {
     </Flex>
   ));
 
+  const currentUser = useTypedSelector((state) => state.account.username);
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
   if (!loggedIn) return <Navigate to='/sign-in' />;
+  else if (editing && article && currentUser !== article.author.username)
+    return <Navigate to='/articles' />;
 
   return (
     <div className={styles.NewArticle}>
-      <div className={styles.heading}>Create new article</div>
+      <div className={styles.heading}>
+        {editing ? 'Edit article' : 'Create new article'}
+      </div>
 
       <form
         className={styles.form}
@@ -117,7 +173,10 @@ const NewArticle: FC = () => {
             type='text'
             className={`${styles.input} ${errors.title && styles.invalid}`}
             placeholder='Title'
-            {...register('title', { required: true, validate: validateTitle })}
+            {...register('title', {
+              required: true,
+              validate: validateTitle,
+            })}
           ></input>
           {errors.title && (
             <div className={styles.error}>

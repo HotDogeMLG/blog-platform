@@ -35,6 +35,14 @@ export const articleReducer = (
         loading: false,
         error: null,
       };
+    case ArticlesActionTypes.UPDATE_ARTICLE:
+      return {
+        ...state,
+        articles: state.articles.map((article, ind) => {
+          if (ind === action.payload.index) return action.payload.article;
+          return article;
+        }),
+      };
     case ArticlesActionTypes.ARTICLE_ERROR:
       return {
         ...state,

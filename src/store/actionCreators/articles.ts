@@ -5,18 +5,30 @@ import {
   article,
   articleResponse,
 } from '../../types/articles';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-export const getArticles = (page: number) => {
+export const getArticles = (page: number, token?: string) => {
   return async (dispatch: Dispatch<ArticleAction>) => {
     try {
       dispatch({ type: ArticlesActionTypes.LOAD_ARTICLES });
 
-      const res = await axios.get<articleResponse>(
-        'https://blog.kata.academy/api/articles',
-        { params: { limit: 5, offset: (page - 1) * 5 } }
-      );
-
+      let res: AxiosResponse<articleResponse>;
+      if (token) {
+        res = await axios.get<articleResponse>(
+          'https://blog.kata.academy/api/articles',
+          {
+            params: { limit: 5, offset: (page - 1) * 5 },
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+      } else {
+        res = await axios.get<articleResponse>(
+          'https://blog.kata.academy/api/articles',
+          { params: { limit: 5, offset: (page - 1) * 5 } }
+        );
+      }
       dispatch({ type: ArticlesActionTypes.GET_ARTICLES, payload: res.data });
     } catch (e) {
       dispatch({
@@ -27,14 +39,26 @@ export const getArticles = (page: number) => {
   };
 };
 
-export const getFullArticle = (slug: string) => {
+export const getFullArticle = (slug: string, token?: string) => {
   return async (dispatch: Dispatch<ArticleAction>) => {
     try {
       dispatch({ type: ArticlesActionTypes.LOAD_ARTICLES });
+      let res: AxiosResponse<{ article: article }>;
 
-      const res = await axios.get<{ article: article }>(
-        `https://blog.kata.academy/api/articles/${slug}`
-      );
+      if (token) {
+        res = await axios.get<{ article: article }>(
+          `https://blog.kata.academy/api/articles/${slug}`,
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+      } else {
+        res = await axios.get<{ article: article }>(
+          `https://blog.kata.academy/api/articles/${slug}`
+        );
+      }
 
       dispatch({
         type: ArticlesActionTypes.GET_FULL_ARTICLE,
@@ -48,3 +72,15 @@ export const getFullArticle = (slug: string) => {
     }
   };
 };
+
+export const updateArticle = (article: article, index: number) => {
+  return {
+    type: ArticlesActionTypes.UPDATE_ARTICLE,
+    payload: {
+      article,
+      index,
+    },
+  };
+};
+
+export type updateArticleType = typeof updateArticle;

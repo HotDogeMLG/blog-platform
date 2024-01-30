@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import styles from './account.module.css';
+import { FC } from 'react';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
 import {
   showUsernameError,
   validateEmail,
@@ -8,8 +8,8 @@ import {
   validateUsername,
 } from './validate';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { Navigate } from 'react-router-dom';
 import { useActions } from '../../hooks/useActions';
+import styles from './account.module.css';
 
 interface EditForm {
   username: string;
