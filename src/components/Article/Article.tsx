@@ -1,9 +1,8 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { rateArticle } from './rateArticle';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { useActions } from '../../hooks/useActions';
 import styles from './Article.module.css';
+import { articleAPI } from '../../services/ArticleService';
 
 interface ArticleProps {
   slug: string;
@@ -29,8 +28,10 @@ const Article: FC<ArticleProps> = ({
   author,
   created,
   favorited,
-  index,
 }) => {
+  const [rateArticleViaAPI] = articleAPI.useRateArticleMutation();
+  const [removeRatingViaAPI] = articleAPI.useRemoveRatingMutation();
+
   const formatTitle = (title: string) => {
     if (title === undefined) return '';
     const newTitle = title.substring(0, 150);
@@ -73,8 +74,12 @@ const Article: FC<ArticleProps> = ({
     return <span key={ind}>{formatTag(tag)}</span>;
   });
 
-  const { updateArticle } = useActions();
   const token = useTypedSelector((state) => state.account.token);
+
+  const onLikeButton = async () => {
+    if (favorited) await removeRatingViaAPI({ slug, token });
+    else await rateArticleViaAPI({ slug, token });
+  };
 
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
 
@@ -87,9 +92,7 @@ const Article: FC<ArticleProps> = ({
           </Link>
           <button
             disabled={!loggedIn}
-            onClick={() => {
-              rateArticle(favorited, slug, token, updateArticle, index);
-            }}
+            onClick={onLikeButton}
             className={`${styles.likes} ${loggedIn &&
               styles.enabled} ${favorited && styles.favorited}`}
           >
@@ -105,7 +108,7 @@ const Article: FC<ArticleProps> = ({
             {favorites}
           </button>
         </div>
-        <div className={styles.tags}>{tagList}</div>
+        <div className={styles.tags}>{tagList.slice(0, 12)}</div>
         <p className={styles.text}>{formatDescription(description)}</p>
       </div>
 

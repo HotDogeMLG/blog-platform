@@ -17,9 +17,12 @@ import NewArticle from '../NewArticle/NewArticle';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './App.scss';
+import { articleAPI } from '../../services/ArticleService';
 
 const App: FC = () => {
-  const error = useTypedSelector((state) => state.articles.error);
+  const page = useTypedSelector((state) => state.page.page);
+  const token = useTypedSelector((state) => state.account.token);
+  const { isError } = articleAPI.useGetArticlesQuery({ page, token });
 
   const { signIn } = useActions();
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
@@ -34,7 +37,7 @@ const App: FC = () => {
           <Route
             path='/articles'
             element={
-              error ? (
+              isError ? (
                 <Error />
               ) : (
                 <div>
@@ -48,7 +51,7 @@ const App: FC = () => {
           />
           <Route
             path='/articles/:slug'
-            element={error ? <Error /> : <FullArticle />}
+            element={isError ? <Error /> : <FullArticle />}
           />
           <Route path='/sign-up' Component={Signup} />
           <Route path='/sign-in' Component={Signin} />

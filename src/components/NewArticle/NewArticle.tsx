@@ -1,12 +1,11 @@
 import { FC, useEffect } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
 import { Button, Flex } from 'antd';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import { article } from '../../types/articles';
 import styles from './NewArticle.module.css';
+import { articleAPI } from '../../services/ArticleService';
 
 interface NewArticle {
   title: string;
@@ -19,23 +18,18 @@ const NewArticle: FC = () => {
   const navigate = useNavigate();
 
   const slug = useParams().slug;
+  const token = useTypedSelector((state) => state.account.token);
   const editing = slug !== undefined ? true : false;
 
-  const {
-    getFullArticle,
-    setTagAmount,
-    deleteTag,
-    addTag,
-    setDefaultTags,
-  } = useActions();
+  const { setTagAmount, deleteTag, addTag, setDefaultTags } = useActions();
 
-  useEffect(() => {
-    if (slug !== undefined) {
-      getFullArticle(slug);
-    }
-  }, []);
-
-  const article = useTypedSelector((state) => state.articles.articles[0]);
+  const [postNewArticle] = articleAPI.usePostNewArticleMutation();
+  const [editArticle] = articleAPI.useEditArticleMutation();
+  const { data: fullArticle } = articleAPI.useGetFullArticleQuery({
+    token,
+    slug,
+  });
+  const article = fullArticle?.article;
 
   const defaultFormValues = {
     title: '',
@@ -71,8 +65,6 @@ const NewArticle: FC = () => {
     defaultValues: defaultFormValues,
   });
 
-  const token = useTypedSelector((state) => state.account.token);
-
   const submit: SubmitHandler<NewArticle> = async (data) => {
     const tags = data.tagList.filter((tag) => tag !== '' && tag !== undefined);
     const uniqueTags: string[] = [];
@@ -80,26 +72,17 @@ const NewArticle: FC = () => {
       if (!uniqueTags.includes(tag)) uniqueTags.push(tag);
     }
     try {
-      if (editing) {
-        await axios.put<{ article: article }>(
-          `https://blog.kata.academy/api/articles/${slug}`,
-          { article: { ...data, tagList: uniqueTags } },
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        );
+      if (editing && slug) {
+        editArticle({
+          token,
+          slug,
+          body: { article: { ...data, tagList: uniqueTags } },
+        });
       } else {
-        await axios.post<{ article: article }>(
-          'https://blog.kata.academy/api/articles',
-          { article: { ...data, tagList: uniqueTags } },
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        );
+        postNewArticle({
+          token,
+          body: { article: { ...data, tagList: uniqueTags } },
+        });
       }
       return navigate('/articles');
     } catch (e) {
@@ -132,11 +115,11 @@ const NewArticle: FC = () => {
           styles.invalid}`}
         {...register(`tagList.${id}`, { required: true })}
       ></input>
-      {arr.length !== 1 && !editing && (
+      {arr.length !== 1 && (
         <Button
           danger
           onClick={() => {
-            resetField(`tagList.${id}`);
+            resetField(`tagList.${id}`, { defaultValue: '' });
             deleteTag(id);
           }}
         >

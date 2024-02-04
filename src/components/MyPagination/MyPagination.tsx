@@ -2,6 +2,7 @@ import React from 'react';
 import { Pagination } from 'antd';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { articleAPI } from '../../services/ArticleService';
 
 const MyPagination: React.FC = () => {
   const { changePage } = useActions();
@@ -10,14 +11,15 @@ const MyPagination: React.FC = () => {
     changePage(page);
   };
 
-  const totalItems = useTypedSelector((state) => state.articles.total);
+  const token = useTypedSelector((state) => state.account.token);
+  const { data: articleRes } = articleAPI.useGetArticlesQuery({ token, page });
 
   return (
     <Pagination
       current={page}
       onChange={changePageFn}
       defaultCurrent={1}
-      total={totalItems}
+      total={articleRes?.articlesCount}
       pageSize={5}
       showSizeChanger={false}
       showQuickJumper
