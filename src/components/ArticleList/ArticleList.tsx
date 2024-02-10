@@ -4,12 +4,15 @@ import Loader from '../Loader/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import styles from './ArticleList.module.css';
 import { articleAPI } from '../../services/ArticleService';
+import { useTheme } from 'antd-style';
 
 const ArticleList: FC = () => {
   const page = useTypedSelector((state) => state.page.page);
   const token = useTypedSelector((state) => state.account.token);
 
-  const { data: articleRes, isLoading } = articleAPI.useGetArticlesQuery({
+  const theme = useTheme();
+
+  const { data: articleRes, isFetching } = articleAPI.useGetArticlesQuery({
     token,
     page,
   });
@@ -34,8 +37,10 @@ const ArticleList: FC = () => {
       );
     });
 
-  return !isLoading ? (
-    <ul className={styles.list}>{articleElements}</ul>
+  return !isFetching ? (
+    <ul className={styles.list} style={{ background: theme.colorBgContainer }}>
+      {articleElements}
+    </ul>
   ) : (
     <Loader />
   );

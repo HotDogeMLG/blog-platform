@@ -10,6 +10,7 @@ import {
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import styles from './account.module.css';
+import { useTheme } from 'antd-style';
 
 interface EditForm {
   username: string;
@@ -41,6 +42,7 @@ const Edit: FC = () => {
 
   const { editProfile } = useActions();
   const token = useTypedSelector((state) => state.account.token);
+  const theme = useTheme();
 
   const submit: SubmitHandler<EditForm> = (data) => {
     let validated: boolean = false;
@@ -90,92 +92,117 @@ const Edit: FC = () => {
   if (!loggedIn) return <Navigate to='/sign-in' />;
 
   return (
-    <div className={styles.signup}>
-      <div className={styles.heading}>Edit Profile</div>
-
-      <form
-        className={styles.form}
-        onSubmit={handleSubmit(submit, errorHandler)}
+    <div
+      className={styles.signupWrapper}
+      style={{ background: theme.colorBgContainer }}
+    >
+      <div
+        className={styles.signup}
+        style={{ background: theme.colorBgElevated, color: theme.colorText }}
       >
-        <label>
-          <div>Username</div>
-          <input
-            className={`${styles.formInput} ${(errors.username ||
-              usernameErrors) &&
-              styles.invalid}`}
-            type='text'
-            placeholder='Username'
-            {...register('username', {
-              validate: validateEditUsername,
-            })}
-          ></input>
-          {(errors.username || usernameErrors) && (
-            <div className={styles.error}>
-              {showUsernameError(watch('username'), usernameErrors)}
-            </div>
-          )}
-        </label>
+        <div className={styles.heading}>Edit Profile</div>
 
-        <label>
-          <div>Email address</div>
-          <input
-            className={`${styles.formInput} ${(errors.email || emailErrors) &&
-              styles.invalid}`}
-            type='email'
-            placeholder='Email address'
-            {...register('email', {
-              validate: validateEditEmail,
-            })}
-          ></input>
-          {(errors.email || emailErrors) && (
-            <div className={styles.error}>
-              {emailErrors
-                ? 'Email ' + emailErrors
-                : 'Please enter a correct email address'}
-            </div>
-          )}
-        </label>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(submit, errorHandler)}
+        >
+          <label>
+            <div>Username</div>
+            <input
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              className={`${styles.formInput} ${(errors.username ||
+                usernameErrors) &&
+                styles.invalid}`}
+              type='text'
+              placeholder='Username'
+              {...register('username', {
+                validate: validateEditUsername,
+              })}
+            ></input>
+            {(errors.username || usernameErrors) && (
+              <div className={styles.error}>
+                {showUsernameError(watch('username'), usernameErrors)}
+              </div>
+            )}
+          </label>
 
-        <label>
-          <div>New Password</div>
-          <input
-            className={`${styles.formInput} ${errors.password &&
-              styles.invalid}`}
-            type='password'
-            placeholder='New Password'
-            {...register('password', {
-              validate: validateEditPassword,
-            })}
-          ></input>
-          {errors.password && (
-            <div className={styles.error}>
-              {watch('password').length < 6
-                ? 'Password should be at least 6 characters'
-                : watch('password').length > 40 &&
-                  'Password should be at most 40 characters'}
-            </div>
-          )}
-        </label>
+          <label>
+            <div>Email address</div>
+            <input
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              className={`${styles.formInput} ${(errors.email || emailErrors) &&
+                styles.invalid}`}
+              type='email'
+              placeholder='Email address'
+              {...register('email', {
+                validate: validateEditEmail,
+              })}
+            ></input>
+            {(errors.email || emailErrors) && (
+              <div className={styles.error}>
+                {emailErrors
+                  ? 'Email ' + emailErrors
+                  : 'Please enter a correct email address'}
+              </div>
+            )}
+          </label>
 
-        <label>
-          <div>Avatar Image (url)</div>
-          <input
-            className={`${styles.formInput} ${errors.image && styles.invalid}`}
-            type='url'
-            placeholder='Avatar image'
-            {...register('image', {
-              validate: validateUrl,
-            })}
-          ></input>
-          {errors.image && (
-            <div className={styles.error}>
-              {errors.image && 'Please enter a correct url'}
-            </div>
-          )}
-        </label>
+          <label>
+            <div>New Password</div>
+            <input
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              className={`${styles.formInput} ${errors.password &&
+                styles.invalid}`}
+              type='password'
+              placeholder='New Password'
+              {...register('password', {
+                validate: validateEditPassword,
+              })}
+            ></input>
+            {errors.password && (
+              <div className={styles.error}>
+                {watch('password').length < 6
+                  ? 'Password should be at least 6 characters'
+                  : watch('password').length > 40 &&
+                    'Password should be at most 40 characters'}
+              </div>
+            )}
+          </label>
 
-        <input className={styles.submit} type='submit' value='Save'></input>
-      </form>
+          <label>
+            <div>Avatar Image (url)</div>
+            <input
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              className={`${styles.formInput} ${errors.image &&
+                styles.invalid}`}
+              type='url'
+              placeholder='Avatar image'
+              {...register('image', {
+                validate: validateUrl,
+              })}
+            ></input>
+            {errors.image && (
+              <div className={styles.error}>
+                {errors.image && 'Please enter a correct url'}
+              </div>
+            )}
+          </label>
+
+          <input className={styles.submit} type='submit' value='Save'></input>
+        </form>
+      </div>
     </div>
   );
 };

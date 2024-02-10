@@ -6,6 +6,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import styles from './NewArticle.module.css';
 import { articleAPI } from '../../services/ArticleService';
+import { useTheme } from 'antd-style';
 
 interface NewArticle {
   title: string;
@@ -37,6 +38,8 @@ const NewArticle: FC = () => {
     body: '',
     tagList: [''],
   };
+
+  const theme = useTheme();
 
   useEffect(() => {
     if (!editing) reset(defaultFormValues);
@@ -110,6 +113,10 @@ const NewArticle: FC = () => {
       <input
         type='text'
         placeholder='Tag'
+        style={{
+          background: theme.colorBgContainer,
+          color: theme.colorText,
+        }}
         className={`${styles.tag} ${styles.input} ${errors.tagList &&
           watch(`tagList.${id}`) === '' &&
           styles.invalid}`}
@@ -141,74 +148,94 @@ const NewArticle: FC = () => {
     return <Navigate to='/articles' />;
 
   return (
-    <div className={styles.NewArticle}>
-      <div className={styles.heading}>
-        {editing ? 'Edit article' : 'Create new article'}
-      </div>
-
-      <form
-        className={styles.form}
-        onSubmit={handleSubmit(submit, errorHandler)}
+    <div
+      className={styles.NewArticleWrapper}
+      style={{ background: theme.colorBgContainer }}
+    >
+      <div
+        className={styles.NewArticle}
+        style={{ background: theme.colorBgElevated, color: theme.colorText }}
       >
-        <label>
-          <div className={styles.label}>Title</div>
-          <input
-            type='text'
-            className={`${styles.input} ${errors.title && styles.invalid}`}
-            placeholder='Title'
-            {...register('title', {
-              required: true,
-              validate: validateTitle,
-            })}
-          ></input>
-          {errors.title && (
-            <div className={styles.error}>
-              {watch('title').length < 3
-                ? 'Title should be at least 3 characters long'
-                : watch('title').length > 150 &&
-                  'Title should be at most 150 characters long'}
-            </div>
-          )}
-        </label>
+        <div className={styles.heading}>
+          {editing ? 'Edit article' : 'Create new article'}
+        </div>
 
-        <label>
-          <div className={styles.label}>Short description</div>
-          <textarea
-            className={`${styles.input} ${errors.description &&
-              styles.invalid}`}
-            placeholder='Description'
-            {...register('description', {
-              required: true,
-              validate: validateDesc,
-            })}
-          ></textarea>
-          {errors.description && (
-            <div className={styles.error}>
-              {watch('description').length < 10
-                ? 'Description should be at least 10 characters long'
-                : watch('description').length > 400 &&
-                  'Description should be at most 400 characters long'}
-            </div>
-          )}
-        </label>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(submit, errorHandler)}
+        >
+          <label>
+            <div className={styles.label}>Title</div>
+            <input
+              type='text'
+              className={`${styles.input} ${errors.title && styles.invalid}`}
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              placeholder='Title'
+              {...register('title', {
+                required: true,
+                validate: validateTitle,
+              })}
+            ></input>
+            {errors.title && (
+              <div className={styles.error}>
+                {watch('title').length < 3
+                  ? 'Title should be at least 3 characters long'
+                  : watch('title').length > 150 &&
+                    'Title should be at most 150 characters long'}
+              </div>
+            )}
+          </label>
 
-        <label>
-          <div className={styles.label}>Text</div>
-          <textarea
-            className={`${styles.input} ${styles.text} ${errors.body &&
-              styles.invalid}`}
-            placeholder='Text'
-            {...register('body', { required: true })}
-          ></textarea>
-        </label>
+          <label>
+            <div className={styles.label}>Short description</div>
+            <textarea
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              className={`${styles.input} ${errors.description &&
+                styles.invalid}`}
+              placeholder='Description'
+              {...register('description', {
+                required: true,
+                validate: validateDesc,
+              })}
+            ></textarea>
+            {errors.description && (
+              <div className={styles.error}>
+                {watch('description').length < 10
+                  ? 'Description should be at least 10 characters long'
+                  : watch('description').length > 400 &&
+                    'Description should be at most 400 characters long'}
+              </div>
+            )}
+          </label>
 
-        <label>
-          <div className={styles.label}>Tags</div>
-          <div className={styles.tags}>{tagList}</div>
-        </label>
+          <label>
+            <div className={styles.label}>Text</div>
+            <textarea
+              style={{
+                background: theme.colorBgContainer,
+                color: theme.colorText,
+              }}
+              className={`${styles.input} ${styles.text} ${errors.body &&
+                styles.invalid}`}
+              placeholder='Text'
+              {...register('body', { required: true })}
+            ></textarea>
+          </label>
 
-        <button className={styles.submit}>Send</button>
-      </form>
+          <label>
+            <div className={styles.label}>Tags</div>
+            <div className={styles.tags}>{tagList}</div>
+          </label>
+
+          <button className={styles.submit}>Send</button>
+        </form>
+      </div>{' '}
     </div>
   );
 };

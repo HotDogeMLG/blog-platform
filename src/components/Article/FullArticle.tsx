@@ -6,6 +6,7 @@ import Loader from '../Loader/Loader';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import styles from './Article.module.css';
 import { articleAPI } from '../../services/ArticleService';
+import { useTheme } from 'antd-style';
 
 const Article: FC = () => {
   const navigate = useNavigate();
@@ -51,70 +52,93 @@ const Article: FC = () => {
 
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
 
-  return !isLoading && fullArticle ? (
-    <div className={styles.article}>
-      <div className={styles.info}>
-        <div className={styles.heading}>
-          <h5 className={styles.title}>{fullArticle.article.title}</h5>
-          <button
-            disabled={!loggedIn}
-            onClick={onLikeButton}
-            className={`${styles.likes} ${loggedIn &&
-              styles.enabled} ${fullArticle.article.favorited &&
-              styles.favorited}`}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='16'
-              height='16'
-              viewBox='0 0 24 24'
-              fill={fullArticle.article.favorited ? 'red' : 'grey'}
-            >
-              <path d='M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z' />
-            </svg>
-            {fullArticle.article.favoritesCount}
-          </button>
-        </div>
-        <div className={styles.tags}>{tags}</div>
-        <p className={`${styles.text} ${styles.description}`}>
-          {fullArticle.article.description}
-        </p>
-        {fullArticle.article.author.username === currentUser && (
-          <Flex gap='large' className={styles.buttons}>
-            <Popconfirm
-              title='Delete the article'
-              description='Are you sure to delete this article?'
-              placement='rightTop'
-              onConfirm={onClickDelete}
-            >
-              <Button danger className={styles.antdBtn}>
-                Delete
-              </Button>
-            </Popconfirm>
-            <Link
-              to={`/${fullArticle.article.slug}/edit`}
-              className={`${styles.green} ${styles.antdBtn}`}
-            >
-              Edit
-            </Link>
-          </Flex>
-        )}
-        <Markdown>{fullArticle.article.body}</Markdown>
-      </div>
+  const theme = useTheme();
 
-      <div className={styles.creator}>
-        <div>
-          <div className={styles.name}>
-            {fullArticle.article.author.username}
+  return !isLoading && fullArticle ? (
+    <div
+      className={styles.articleWrapper}
+      style={{
+        background: theme.colorBgContainer,
+      }}
+    >
+      <div
+        className={styles.article}
+        style={{
+          background: theme.colorBgElevated,
+          color: theme.colorText,
+        }}
+      >
+        <div className={styles.info}>
+          <div className={styles.heading}>
+            <h5 className={styles.title}>{fullArticle.article.title}</h5>
+            <button
+              disabled={!loggedIn}
+              onClick={onLikeButton}
+              className={`${styles.likes} ${loggedIn &&
+                styles.enabled} ${fullArticle.article.favorited &&
+                styles.favorited}`}
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width='16'
+                height='16'
+                viewBox='0 0 24 24'
+                fill={fullArticle.article.favorited ? 'red' : 'grey'}
+              >
+                <path d='M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z' />
+              </svg>
+              {fullArticle.article.favoritesCount}
+            </button>
           </div>
-          <div className={styles.date}>
-            {formatDate(fullArticle.article.createdAt)}
-          </div>
+          <div className={styles.tags}>{tags}</div>
+          <p
+            style={{
+              color: theme.colorText,
+            }}
+            className={`${styles.text} ${styles.description}`}
+          >
+            {fullArticle.article.description}
+          </p>
+          {fullArticle.article.author.username === currentUser && (
+            <Flex gap='large' className={styles.buttons}>
+              <Popconfirm
+                title='Delete the article'
+                description='Are you sure to delete this article?'
+                placement='rightTop'
+                onConfirm={onClickDelete}
+              >
+                <Button danger className={styles.antdBtn}>
+                  Delete
+                </Button>
+              </Popconfirm>
+              <Link
+                to={`/${fullArticle.article.slug}/edit`}
+                className={`${styles.green} ${styles.antdBtn}`}
+              >
+                Edit
+              </Link>
+            </Flex>
+          )}
+          <Markdown>{fullArticle.article.body}</Markdown>
         </div>
-        <img
-          src={fullArticle.article.author.image}
-          className={styles.image}
-        ></img>
+
+        <div className={styles.creator}>
+          <div>
+            <div className={styles.name}>
+              {fullArticle.article.author.username}
+            </div>
+            <div
+              className={styles.date}
+              style={{ color: theme.colorTextDescription }}
+            >
+              {formatDate(fullArticle.article.createdAt)}
+            </div>
+          </div>
+          <img
+            src={fullArticle.article.author.image}
+            className={styles.image}
+          ></img>
+        </div>
       </div>
     </div>
   ) : (

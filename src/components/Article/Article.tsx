@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import styles from './Article.module.css';
 import { articleAPI } from '../../services/ArticleService';
+import { useTheme } from 'antd-style';
 
 interface ArticleProps {
   slug: string;
@@ -83,8 +84,16 @@ const Article: FC<ArticleProps> = ({
 
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
 
+  const theme = useTheme();
+
   return (
-    <div className={styles.article}>
+    <div
+      className={styles.article}
+      style={{
+        background: theme.colorBgElevated,
+        color: theme.colorText,
+      }}
+    >
       <div className={styles.info}>
         <div className={styles.heading}>
           <Link to={`/articles/${slug}`} className={styles.title}>
@@ -115,7 +124,12 @@ const Article: FC<ArticleProps> = ({
       <div className={styles.creator}>
         <div>
           <div className={styles.name}>{author.username}</div>
-          <div className={styles.date}>{formatDate(created)}</div>
+          <div
+            style={{ color: theme.colorTextDescription }}
+            className={styles.date}
+          >
+            {formatDate(created)}
+          </div>
         </div>
         <img src={author.image} className={styles.image}></img>
       </div>

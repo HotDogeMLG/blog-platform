@@ -1,7 +1,7 @@
 .NewArticle {
   width: 940px;
   height: fit-content;
-  margin: 35px auto 30px auto;
+  margin: 0 auto 0 auto;
   padding: 48px 32px;
   background-color: white;
   display: flex;
@@ -97,4 +97,8 @@
 .addTag {
   border: 1px solid hsla(209, 100%, 55%, 1);
   color: hsla(209, 100%, 55%, 1);
+}
+
+.NewArticleWrapper {
+  padding: 35px 0 30px 0;
 }

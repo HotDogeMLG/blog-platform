@@ -3,6 +3,7 @@ import { Pagination } from 'antd';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { articleAPI } from '../../services/ArticleService';
+import { useTheme } from 'antd-style';
 
 const MyPagination: React.FC = () => {
   const { changePage } = useActions();
@@ -14,8 +15,14 @@ const MyPagination: React.FC = () => {
   const token = useTypedSelector((state) => state.account.token);
   const { data: articleRes } = articleAPI.useGetArticlesQuery({ token, page });
 
+  const theme = useTheme();
+
   return (
     <Pagination
+      style={{
+        background: theme.colorBgContainer,
+        padding: '0 0 20px 0',
+      }}
       current={page}
       onChange={changePageFn}
       defaultCurrent={1}
