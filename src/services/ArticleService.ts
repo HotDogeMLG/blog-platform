@@ -97,6 +97,20 @@ export const articleAPI = createApi({
       ) {
         const patchResult = dispatch(
           articleAPI.util.updateQueryData(
+            'getFullArticle',
+            { slug, token },
+            (draft) => {
+              const newArticle = {
+                ...draft.article,
+                favorited: true,
+                favoritesCount: draft.article.favoritesCount + 1,
+              };
+              draft.article = newArticle;
+            }
+          )
+        );
+        const fullPatchResult = dispatch(
+          articleAPI.util.updateQueryData(
             'getArticles',
             { page, token },
             (draft) => {
@@ -115,6 +129,7 @@ export const articleAPI = createApi({
           await queryFulfilled;
         } catch {
           patchResult.undo();
+          fullPatchResult.undo();
         }
       },
     }),
@@ -137,6 +152,20 @@ export const articleAPI = createApi({
       ) {
         const patchResult = dispatch(
           articleAPI.util.updateQueryData(
+            'getFullArticle',
+            { slug, token },
+            (draft) => {
+              const newArticle = {
+                ...draft.article,
+                favorited: false,
+                favoritesCount: draft.article.favoritesCount - 1,
+              };
+              draft.article = newArticle;
+            }
+          )
+        );
+        const fullPatchResult = dispatch(
+          articleAPI.util.updateQueryData(
             'getArticles',
             { page, token },
             (draft) => {
@@ -155,6 +184,7 @@ export const articleAPI = createApi({
           await queryFulfilled;
         } catch {
           patchResult.undo();
+          fullPatchResult.undo();
         }
       },
     }),

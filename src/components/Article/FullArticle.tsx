@@ -13,6 +13,7 @@ const Article: FC = () => {
 
   const slug = useParams().slug;
   const token = useTypedSelector((state) => state.account.token);
+  const page = useTypedSelector((state) => state.page.page);
 
   const { data: fullArticle, isLoading } = articleAPI.useGetFullArticleQuery({
     token,
@@ -46,8 +47,8 @@ const Article: FC = () => {
   const onLikeButton = async () => {
     if (slug)
       fullArticle?.article.favorited
-        ? await removeRatingViaAPI({ slug, token })
-        : await rateArticleViaAPI({ slug, token });
+        ? await removeRatingViaAPI({ slug, token, page })
+        : await rateArticleViaAPI({ slug, token, page });
   };
 
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
