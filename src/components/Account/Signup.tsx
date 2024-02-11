@@ -216,7 +216,7 @@ const Signup: FC = () => {
                 viewBox='0,0,256,256'
               >
                 <g
-                  fill='#ffffff'
+                  fill={theme.colorBgElevated}
                   fillRule='nonzero'
                   stroke='none'
                   strokeWidth='1'
