@@ -32,6 +32,7 @@ const Article: FC<ArticleProps> = ({
 }) => {
   const [rateArticleViaAPI] = articleAPI.useRateArticleMutation();
   const [removeRatingViaAPI] = articleAPI.useRemoveRatingMutation();
+  const page = useTypedSelector((state) => state.page.page);
 
   const formatTitle = (title: string) => {
     if (title === undefined) return '';
@@ -71,20 +72,27 @@ const Article: FC<ArticleProps> = ({
     return `${month} ${day}, ${year}`;
   };
 
+  const theme = useTheme();
+
   const tagList = tags.map((tag, ind) => {
-    return <span key={ind}>{formatTag(tag)}</span>;
+    return (
+      <span
+        style={{ border: `1px solid ${theme.colorTextDescription}` }}
+        key={ind}
+      >
+        {formatTag(tag)}
+      </span>
+    );
   });
 
   const token = useTypedSelector((state) => state.account.token);
 
   const onLikeButton = async () => {
-    if (favorited) await removeRatingViaAPI({ slug, token });
-    else await rateArticleViaAPI({ slug, token });
+    if (favorited) await removeRatingViaAPI({ slug, token, page });
+    else await rateArticleViaAPI({ slug, token, page });
   };
 
   const loggedIn = useTypedSelector((state) => state.account.loggedIn);
-
-  const theme = useTheme();
 
   return (
     <div

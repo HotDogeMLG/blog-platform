@@ -58,6 +58,9 @@ const Header: FC = () => {
           <button
             onClick={logOut}
             className={`${styles.btn} ${styles.outlined}`}
+            style={{
+              border: `1px solid ${theme.colorText}`,
+            }}
           >
             Log Out
           </button>

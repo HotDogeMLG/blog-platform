@@ -2,6 +2,7 @@
   margin: 0 auto 0 auto;
   padding: 20px;
   width: 950px;
+  min-height: 100px;
   background-color: white;
   display: flex;
   justify-content: space-between;

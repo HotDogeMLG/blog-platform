@@ -80,7 +80,7 @@ export const articleAPI = createApi({
 
     rateArticle: build.mutation<
       { article: article },
-      { slug: string; token: string }
+      { slug: string; token: string; page: number }
     >({
       query: ({ slug, token }) => ({
         url: `/articles/${slug}/favorite`,
@@ -90,12 +90,38 @@ export const articleAPI = createApi({
           Authorization: `Token ${token}`,
         },
       }),
-      invalidatesTags: ['Article'],
+
+      async onQueryStarted(
+        { slug, token, page },
+        { dispatch, queryFulfilled }
+      ) {
+        const patchResult = dispatch(
+          articleAPI.util.updateQueryData(
+            'getArticles',
+            { page, token },
+            (draft) => {
+              const newArticles = draft.articles.map((article) => {
+                if (article.slug === slug) {
+                  article.favorited = true;
+                  article.favoritesCount += 1;
+                }
+                return article;
+              });
+              draft.articles = newArticles;
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
 
     removeRating: build.mutation<
       { article: article },
-      { slug: string; token: string }
+      { slug: string; token: string; page: number }
     >({
       query: ({ slug, token }) => ({
         url: `/articles/${slug}/favorite`,
@@ -104,7 +130,33 @@ export const articleAPI = createApi({
           Authorization: `Token ${token}`,
         },
       }),
-      invalidatesTags: ['Article'],
+
+      async onQueryStarted(
+        { slug, token, page },
+        { dispatch, queryFulfilled }
+      ) {
+        const patchResult = dispatch(
+          articleAPI.util.updateQueryData(
+            'getArticles',
+            { page, token },
+            (draft) => {
+              const newArticles = draft.articles.map((article) => {
+                if (article.slug === slug) {
+                  article.favorited = false;
+                  article.favoritesCount -= 1;
+                }
+                return article;
+              });
+              draft.articles = newArticles;
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
   }),
 });
